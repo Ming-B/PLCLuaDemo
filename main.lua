@@ -17,11 +17,11 @@ local input = io.read("*l") -- read the next line, stored implicitly as string t
 
 --control structures
 while (input ~= "skip") do    -- while syntax
-    local asNumber = tonumber(input)    -- stores the input as number or false if input is strictly string
+    local asNumber = tonumber(input)    -- stores the input as number or nil if input is strictly string
     local inType -- can declare a variable without assigning any type to it
 
-    if(asNumber) then  -- can use paranthesis
-        if asNumber > 0 then           -- but don't have to
+    if asNumber then  -- if asNumber is nil, evaluates to false
+        if (asNumber > 0) then           -- also works with paranthesis, but not required
             inType = "Positive number"
         elseif asNumber < 0 then      -- elseif is an explicit keyword
             inType = "Negative number"
