@@ -54,6 +54,23 @@ local function errorHandler(err)
     print("Error: " .. err)
 end
 
+--sample couroutine, the coroutine table provides the create function
+--often you find the argument to create is an anonymous function
+local co = coroutine.create(function ()
+    print ("hi!")
+end)
+print(co) --> should return a type thread
+print(coroutine.status(co)) --> suspended
+coroutine.resume(co) --> running
+print(coroutine.status(co)) --> dead
+
+local routine = coroutine.create(function ()
+    for i = 1, 10 do 
+        print("co", i)
+        coroutine.yield()
+    end
+end)
+
 
 --table object that mimicks a car
 local car = {
@@ -100,3 +117,27 @@ end
 local redCar = Car.new("red") --creates new instance 
 redCar:accelerate()
 redCar:brake()
+
+--Account class
+local Account = {balance = 0}
+
+function Account:new (o)
+    o = o or {}
+    setmetatable(o, self)
+    self._index = self
+    return o
+end
+
+function Account:deposit(amount)
+    self.balance = self.balance + amount
+end
+
+function Account:withdraw(amount)
+    if self.balance < amount then error"insufficient funds" end
+    self.balance = self.balance - amount 
+end
+
+SpecialAccount = Account:new() --inherits new from Account, but the self will 
+--index to special account
+local s = SpecialAccount:new{limit = 1000.00} --metatable of is is specialaccount
+s:deposit(100.00) --this function is found at Account, not present in s or specialAccount
