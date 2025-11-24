@@ -21,6 +21,7 @@ while (input ~= "skip") do    -- while syntax
     local inType -- can declare a variable without assigning any type to it
 
     if(asNumber) then  -- can use paranthesis
+        if asNumber > 0 then           -- but don't have to
             inType = "Positive number"
         elseif asNumber < 0 then      -- elseif is an explicit keyword
             inType = "Negative number"
