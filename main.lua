@@ -33,11 +33,11 @@ while (input ~= "skip") do    -- while syntax
     print(input.. " is a:", inType) --[[ two methods of concatenating strings to print
     ".." concatenates normally, "," forms an array/table of the values, resulting in a tab separator ]]
 
-    print("\nEnter an input:")  -- printing with a line break
+    print "\nEnter an input:"  -- printing doesn't need paranthesis
     input = io.read("*l") -- read the next line
 end
 
-print() -- empty print statement still forms new line
+print() -- empty print statement still forms new line, this case does require paranthesis, however
 
 -- tables
 local genericTable = {"a", "b", "c","d"}    local keyedTable = {"a", "b", key3="c"} -- can include multiple assignments on one line (tables or otherwise)
@@ -147,7 +147,7 @@ function Car:new(color)
 
     local colors = {"green","red","blue","yellow","gray","grey","black"}
     local i = 1
-    local valid -- declare valid before loop to keep in scope
+    local valid -- declare valid outside of loop to keep in scope
     repeat
         valid = string.lower(color) == colors[i]    -- valid is boolean, true if color is string in colors
         i = i+1     -- no ++ operators
