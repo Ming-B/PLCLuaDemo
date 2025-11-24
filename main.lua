@@ -10,31 +10,38 @@ line
 comments]]
 
 --variables and data types
-local prompt = "Enter an input, or skip:" -- note that there is no explicit type declaration, number is only the variable name
+local integer_type = 10
+local number_dec = 10.0
+local number_sci = 100e-1
+local allEqual = integer_type == number_dec and integer_type == number_sci and number_dec == number_sci     -- boolean type, "or" and "and" are keyword operators
+print(allEqual and "All these values are equivalent:" or "These are not all equivalent values:")    -- and can also be used to set an output value based on an initial boolean
+print(integer_type.." of type "..type(integer_type),number_dec.." of type "..type(number_dec),number_sci.." of type "..type(number_sci))
+--[[ ".." is string concatenation, "," is array concatenation which is allowed within a print statment but not a variable declaration
+so local string_type = "Hello Lua","hi" is not allowed
+but local string_1, string_2 = "Hello 1", "Hello 2" is allowed instead
+]]
 
+local prompt = "Enter an input, or skip:" -- note that there is no explicit type declaration, number is only the variable name
 print(prompt);  -- semicolons allowed (but not required)
-local input = io.read("*l") -- read the next line, stored implicitly as string type
+local input = io.read("*l") -- read the next line, stored implicitly as string type, without the line break
 
 --control structures
 while (input ~= "skip") do    -- while syntax
     local asNumber = tonumber(input)    -- stores the input as number or nil if input is strictly string
-    local inType -- can declare a variable without assigning any type to it
 
     if asNumber then  -- if asNumber is nil, evaluates to false
         if (asNumber > 0) then           -- also works with paranthesis, but not required
-            inType = "Positive number"
+            print(input.." is a positive number")
         elseif asNumber < 0 then      -- elseif is an explicit keyword
-            inType = "Negative number"
+            print(input.." is a negative number")
         else                        -- else statements don't need "then"
-            inType = "Zero nalue number"
-        end                         -- one end for the whole statement
-    else inType = type(input) -- can also be single line
-    end
-    print(input.. " is a:", inType) --[[ two methods of concatenating strings to print
-    ".." concatenates normally, "," forms an array/table of the values, resulting in a tab separator ]]
+            print(input.." is the number zero")
+        end
+    else print(input.." is not a number\n") -- can also be a single line
+end
 
-    print "\nEnter an input:"  -- printing doesn't need paranthesis
-    input = io.read("*l") -- read the next line
+    print "Enter an input:"  -- printing doesn't need paranthesis when only a string
+    input = io.read("*l")
 end
 
 print() -- empty print statement still forms new line, this case does require paranthesis, however
