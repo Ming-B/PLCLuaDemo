@@ -1,8 +1,6 @@
 --using compare.lua as an example
 local compareModule = require("compare")
 
-
-
 -- single line comments
 --[[multi
 line
@@ -189,7 +187,23 @@ end
 
 SpecialAccount = Account:new() --inherits new from Account, but the self will 
 --index to special account
-S = SpecialAccount:new{limit = 1000.00} --metatable of is is specialaccount
+S = SpecialAccount:new{limit = 1000.00} --metatable of S is specialaccount, imposes limit of 1000.0
 print(S.balance)
 S:deposit(100.00) --this function is found at Account, not present in s or specialAccount
+print(S.balance)
+
+--method overriding 
+--allows withdraws to go into the negative balance
+function SpecialAccount:withdraw(amount)
+    if amount - self.balance >= self:getLimit() then
+        error"insufficient funds"
+    end
+    self.balance = self.balance - amount
+end
+
+function SpecialAccount:getLimit ()
+    return self.limit or 0
+end
+
+S:withdraw(200.00)
 print(S.balance)
