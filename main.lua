@@ -1,10 +1,17 @@
 --using compare.lua as an example
+print("Lua comparison to C function:")
 local compareModule = require("compare")
+print()
 
 -- single line comments
 --[[multi
 line
-comments]]
+comments ]]
+--[[ 
+--[[
+do not track how many openings, a single closing double brack
+closes all commment blocks above it
+]]
 
 --variables and data types
 local integer_type = 10
@@ -19,7 +26,7 @@ but local string_1, string_2 = "Hello 1", "Hello 2" is allowed instead
 ]]
 
 local prompt = "Enter an input, or skip:" -- note that there is no explicit type declaration, number is only the variable name
-print(prompt);  -- semicolons allowed (but not required)
+print("\n"..prompt);  -- semicolons allowed (but not required)
 local input = io.read("*l") -- read the next line, stored implicitly as string type, without the line break
 
 --control structures
@@ -59,6 +66,8 @@ for i = 1,#genericTable,2 do -- can also include increment
 list = list..genericTable[i]    -- indentation is also optional
 end
 print(list)
+print("Press enter to continue")
+input = io.read("*l") -- not great practice in general, but sufficient for demo purposes
 
 print("Printing numerical indecies:")
 for i,value in ipairs(keyedTable) do -- prints in order for numerical keys, stops at first nonnumeric key (including nil)
@@ -66,9 +75,11 @@ for i,value in ipairs(keyedTable) do -- prints in order for numerical keys, stop
 end
 print("Printing all key-value pairs:")
 for key,value in pairs(keyedTable) do print(key, value) end -- single line, but order is no longer certain
-print()
+print("Press enter to continue")
+input = io.read("*l")
 
 --repeat loops
+print("Print until \"GOOSE!\" is reached")
 local gameTable = {"duck","duck","GOOSE!","duck","duck"}
 local i   -- i be declared, but next(table,index) can take nil as input, operates the same as next(table)
 repeat
@@ -76,7 +87,8 @@ repeat
     i, val = next(gameTable,i) -- get next index and val, may be next numberic index, but not defined as such
     print(val)
 until (val == "GOOSE!") -- val, which is local to repeat loop, still in scope here
-print()
+print("Press enter to continue")
+input = io.read("*l")
 
 --regular functions 
 local function addNums(a, b)
@@ -103,6 +115,7 @@ local function errorHandler(err)
     print("Error: " .. err)
 end
 
+print "Running a coroutine:"
 --sample couroutine, the coroutine table provides the create function
 --often you find the argument to create is an anonymous function
 local co = coroutine.create(function ()
@@ -122,57 +135,18 @@ end)
 
 coroutine.resume(routine) --resumes the previous coroutine after a yield
 
+print("Press enter to continue")
+input = io.read("*l")
 
---car class that demonstrates oop in lua 
-Car = {} -- defines a table car 
-Car.__index = Car -- sets index to Car so instances can inherit methods 
-
---Constructor 
-function Car:new(color)
-    if(type(color) ~= "string") then print ("Invalid color form") return end
-
-    local colors = {"green","red","blue","yellow","gray","grey","black"}
-    local i = 1
-    local valid -- declare valid outside of loop to keep in scope
-    repeat
-        valid = string.lower(color) == colors[i]    -- valid is boolean, true if color is string in colors
-        i = i+1     -- no ++ operators
-    until valid or i > #colors     -- "or" and "and" are keyword operators 
-    if(not valid) then      -- "not" is also a keyword operator, separate from ~=
-        print("Our cars don't come in that color") return   --returns nil if no car created
-    end
-
-    local self = setmetatable({}, Car)
-    self.color = color
-    self.speed = 0
-    return self
-end
-
-function Car:accelerate()
-    self.speed = self.speed + 10
-    print(self.color .. " car accelerated to " .. self.speed .. " km/h")
-end
-
-function Car:brake()
-    self.speed = math.max(0, self.speed - 10)
-    print(self.color .. " car slowed to " .. self.speed .. " km/h")
-end
-
-local redCar = Car:new("red") --creates new instance 
-if (redCar == nil) then
-    print("Try again?:")
-else
-    redCar:accelerate()
-    redCar:brake()
-end
-
+-- OOP
+print "Creating a checking account:"
 --Account class
 Account = {balance = 0}
 
 function Account:new (o)
-    o = o or {}
+    o = o or {} -- defaults to empty table if no input (or explicit nil or false) passed
     setmetatable(o, self)
-    self.__index = self --note that lua needs two underscores for the syntax
+    self.__index = self -- note that lua needs two underscores for the syntax
     return o
 end
 
@@ -185,15 +159,11 @@ function Account:withdraw(amount)
     self.balance = self.balance - amount 
 end
 
-SpecialAccount = Account:new() --inherits new from Account, but the self will 
---index to special account
-S = SpecialAccount:new{limit = 1000.00} --metatable of S is specialaccount, imposes limit of 1000.0
-print(S.balance)
-S:deposit(100.00) --this function is found at Account, not present in s or specialAccount
-print(S.balance)
+-- Special Account inherits new from Account, but the self will index to special account
+SpecialAccount = Account:new()
+S = SpecialAccount:new{limit = 1000.00} -- metatable of S is specialaccount, imposes limit of 1000.0
 
---method overriding 
---allows withdraws to go into the negative balance
+--method overriding allows withdraws to go into the negative balance
 function SpecialAccount:withdraw(amount)
     if amount - self.balance >= self:getLimit() then
         error"insufficient funds"
@@ -205,5 +175,29 @@ function SpecialAccount:getLimit ()
     return self.limit or 0
 end
 
-S:withdraw(200.00)
-print(S.balance)
+print "Would you like to make a Special Account?"
+repeat
+    print "Y/N:"
+    local choice = io.read("*l")
+    A = string.lower(choice) == "y" and SpecialAccount:new() or string.lower(choice) == "n" and Account:new()
+until A -- repeat until A stores a non-nil value
+
+while(true) do
+    print "Would you like to deposit or withdraw?"
+    local choice = io.read("*l")
+    local valid = string.lower(choice) == "deposit" or string.lower(choice) == "withdraw"
+    while (not valid) do
+        print "Please type either deposit or withdraw"
+        choice = io.read("*l")
+        valid = string.lower(choice) == "deposit" or string.lower(choice) == "withdraw"
+    end
+
+    print "How much?"
+    local amount = tonumber(io.read("*l"))
+    while (not amount) do
+        print "Please type a number"
+        amount = tonumber(io.read("*l"))
+    end
+    A[choice](A,amount)  -- can pass string directly to get function, but because it is defined with :, the object itself must be passed as an operator
+    print(A.balance)
+end
