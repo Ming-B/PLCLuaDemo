@@ -1,8 +1,7 @@
--- -- Assuming there is a module named 'mymodule.lua' in the same directory
--- local mymodule = require("mymodule")
+--using compare.lua as an example
+local compareModule = require("compare")
 
--- -- Now you can access functions and variables from mymodule
--- mymodule.someFunction()
+
 
 -- single line comments
 --[[multi
@@ -76,7 +75,7 @@ local gameTable = {"duck","duck","GOOSE!","duck","duck"}
 local i   -- i be declared, but next(table,index) can take nil as input, operates the same as next(table)
 repeat
     local val
-    i, val = next(gameTable,i) -- get next index and val, may be  next numberic index, but not defined as such
+    i, val = next(gameTable,i) -- get next index and val, may be next numberic index, but not defined as such
     print(val)
 until (val == "GOOSE!") -- val, which is local to repeat loop, still in scope here
 print()
@@ -123,30 +122,12 @@ local routine = coroutine.create(function ()
     end
 end)
 
+coroutine.resume(routine) --resumes the previous coroutine after a yield
 
---[[table object that mimicks a car
-local car = {
-    color = "red",
-    speed = 0,
-    accelerate = function(self)
-        self.speed = self.speed + 10
-    end
-}
-print(car.color)
-print(car.speed)
-car:accelerate()
-print(car.speed)
-
-local parent = {x = 10}
-local child = setmetatable({}, {_index = parent})
-
-print(child.x) -- 10, looked up in parent via _index
-child.x = 20 -- sets child.x to 20, no longer uses parent _index
-print(child.x) -- 20]]
 
 --car class that demonstrates oop in lua 
 Car = {} -- defines a table car 
-Car._index = Car -- sets index to Car so instances can inherit methods 
+Car.__index = Car -- sets index to Car so instances can inherit methods 
 
 --Constructor 
 function Car:new(color)
@@ -171,7 +152,7 @@ end
 
 function Car:accelerate()
     self.speed = self.speed + 10
-    print(self.color .. " car accelerated to" .. self.speed .. " km/h")
+    print(self.color .. " car accelerated to " .. self.speed .. " km/h")
 end
 
 function Car:brake()
@@ -188,12 +169,12 @@ else
 end
 
 --Account class
-local Account = {balance = 0}
+Account = {balance = 0}
 
 function Account:new (o)
     o = o or {}
     setmetatable(o, self)
-    self._index = self
+    self.__index = self --note that lua needs two underscores for the syntax
     return o
 end
 
@@ -208,5 +189,7 @@ end
 
 SpecialAccount = Account:new() --inherits new from Account, but the self will 
 --index to special account
-local s = SpecialAccount:new{limit = 1000.00} --metatable of is is specialaccount
-s:deposit(100.00) --this function is found at Account, not present in s or specialAccount
+S = SpecialAccount:new{limit = 1000.00} --metatable of is is specialaccount
+print(S.balance)
+S:deposit(100.00) --this function is found at Account, not present in s or specialAccount
+print(S.balance)
